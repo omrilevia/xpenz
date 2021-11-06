@@ -1,4 +1,4 @@
-public class MenuOption extends Command {
+public class MenuOption implements Command {
     private String menuName;
     private Receiver receiver;
 
@@ -15,12 +15,7 @@ public class MenuOption extends Command {
     public void setReceiver(Receiver r){
         this.receiver = r;
     }
-    @Override
-    public void execute(String input) {
-        receiver.doAction(input);
-    }
 
-    @Override
     public void execute(){
         receiver.doAction();
     }

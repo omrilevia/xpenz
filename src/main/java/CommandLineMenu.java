@@ -6,8 +6,12 @@ public class CommandLineMenu implements IDisplay{
 
     public CommandLineMenu(){
         menuOptions = new ArrayList<MenuOption>();
-        menuOptions.add(new MenuOption("Write expense to db", new SQLWriter()));
+        menuOptions.add(new MenuOption("Write expense to db", new ExpenseInput()));
         menuOptions.add(new MenuOption("Generate expense csv report", new CSVWriter()));
+        menuOptions.add(new MenuOption("Quit", ()->{
+            Runtime.getRuntime().exit(0);
+        }));
+
     }
     public static void greeting(){
         System.out.println("Welcome to xPenz, " +
@@ -18,6 +22,7 @@ public class CommandLineMenu implements IDisplay{
 
 
     public  void clearConsole(){
+        //System.out.println("Clearing console");
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
