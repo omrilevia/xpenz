@@ -1,6 +1,8 @@
+import java.sql.Connection;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
 public class ExpenseInput implements Receiver {
     private Pattern pattern;
     public ExpenseInput(){
@@ -20,6 +22,8 @@ public class ExpenseInput implements Receiver {
                     System.out.println("Invalid input, please try again");
                 }
                 else{
+                    SQLiteJDBC.createConnection();
+
                     System.out.println("Item written to db");
                 }
                 System.out.print("Enter: ");
