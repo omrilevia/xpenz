@@ -18,11 +18,10 @@ public class SQLiteJDBC {
                 connection = DriverManager.getConnection("jdbc:sqlite:expenses.db");
                 Statement s = connection.createStatement();
                 String sql = "CREATE TABLE IF NOT EXISTS EXPENSES " +
-                        "(ID INTEGER AUTO_INCREMENT NOT NULL," +
-                        "DATE DATETIME NOT NULL" +
-                        "AMOUNT DECIMAL NOT NULL" +
+                        "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "DATE DATETIME NOT NULL," +
+                        "AMOUNT DECIMAL NOT NULL," +
                         "TAG VARCHAR(25) NOT NULL" +
-                        "PRIMARY KEY (ID)" +
                         ");";
                 s.executeUpdate(sql);
                 s.close();
@@ -35,19 +34,22 @@ public class SQLiteJDBC {
         }
     }
 
-    public static void write(String input){
+
+
+    public static void writeExpense(String input) throws SQLException {
         createConnection();
+        connection = DriverManager.getConnection("jdbc:sqlite:expenses.db");
         String[] parts = Arrays.stream(input.split(" ")).filter(e -> e.trim().length() > 0).toArray(String[]::new);
         String[] dateParts = Arrays.stream(parts[0].split("-")).filter(e -> e.trim().length() > 0).toArray(String[]::new);
-        LocalDate ld = LocalDate.of(Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[0]));
+        LocalDate ld = LocalDate.of(Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]));
 
         String sqlString = "INSERT INTO EXPENSES (DATE, AMOUNT, TAG) values (?, ?, ?)";
         try{
 
             PreparedStatement ps = connection.prepareStatement(sqlString);
-            ps.setDate(0, Date.valueOf(ld));
-            ps.setDouble(1, Double.parseDouble(parts[1]));
-            ps.setString(2, parts[2]);
+            ps.setDate(1, Date.valueOf(ld));
+            ps.setDouble(2, Double.parseDouble(parts[1]));
+            ps.setString(3, parts[2]);
             ps.executeUpdate();
             connection.close();
         }
@@ -55,6 +57,10 @@ public class SQLiteJDBC {
             se.printStackTrace();
         }
 
+    }
+
+    public static void dumpRows(){
+        String sql = "SELECT * FROM EXPENSES";
 
     }
 }

@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -12,29 +13,35 @@ public class ExpenseInput implements Receiver {
     public void doAction() {
         System.out.println("Enter each expense in the format '[MM-DD-YYYY] xx.xx [tag]', enter q to quit");
         Scanner sc = new Scanner(System.in);
-
-        String input = "";
         System.out.print("Enter: ");
-        do{
+
+        while(!sc.hasNextLine());
+        String input = sc.nextLine();
+
+        while(!(input.equalsIgnoreCase("q") || input.equalsIgnoreCase("quit"))){
+            if(!validateInput(input)){
+                System.out.println("Invalid input, please try again");
+            }
+            else{
+                SQLiteJDBC.createConnection();
+                try{
+                    SQLiteJDBC.writeExpense(input);
+                }
+                catch(SQLException se){
+                    se.printStackTrace();
+                }
+            }
+            System.out.print("Enter: ");
             if(sc.hasNextLine()){
                 input = sc.nextLine();
-                if(!validateInput(input)){
-                    System.out.println("Invalid input, please try again");
-                }
-                else{
-                    SQLiteJDBC.createConnection();
-
-                    System.out.println("Item written to db");
-                }
-                System.out.print("Enter: ");
             }
-        }while(!(input.equalsIgnoreCase("q") || input.equalsIgnoreCase("quit")));
+
+        }
 
     }
 
     public boolean validateInput(String input){
         final Matcher matcher = pattern.matcher(input);
-        // Use results...
         return matcher.matches();
     }
 
