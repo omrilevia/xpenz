@@ -7,11 +7,11 @@ import java.util.regex.Matcher;
 public class ExpenseInput implements Receiver {
     private Pattern pattern;
     public ExpenseInput(){
-        pattern = Pattern.compile("^(0?[1-9]|[12][0-9]|3[01])-[0-9]+-[0-9]+\\s[0-9]+\\.[0-9]+\\s[a-zA-Z]+$", Pattern.CASE_INSENSITIVE);
+        pattern = Pattern.compile("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])+\\s[0-9]+\\.[0-9]+\\s[a-zA-Z]+$", Pattern.CASE_INSENSITIVE);
     }
 
     public void doAction() {
-        System.out.println("Enter each expense in the format '[MM-DD-YYYY] xx.xx [tag]', enter q to quit");
+        System.out.println("Enter each expense in the format '[YYYY-MM-DD] xx.xx [tag]', enter q to quit");
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter: ");
 
