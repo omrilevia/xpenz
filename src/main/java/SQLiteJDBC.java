@@ -20,7 +20,7 @@ public class SQLiteJDBC {
                 String sql = "CREATE TABLE IF NOT EXISTS EXPENSES " +
                         "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "DATE TEXT NOT NULL," +
-                        "AMOUNT REAL NOT NULL," +
+                        "AMOUNT INTEGER NOT NULL," +
                         "TAG TEXT NOT NULL" +
                         ");";
                 s.executeUpdate(sql);
@@ -48,7 +48,9 @@ public class SQLiteJDBC {
             //System.out.println(Date.valueOf(ld).toString());
             PreparedStatement ps = connection.prepareStatement(sqlString);
             ps.setString(1, parts[0]);
-            ps.setDouble(2, Double.parseDouble(parts[1]));
+            String s = String.valueOf(100 * Double.parseDouble(parts[1]));
+            String[] sParts = s.split("\\.");
+            ps.setInt(2, Integer.valueOf(sParts[0]) );
             ps.setString(3, parts[2]);
             ps.executeUpdate();
             ps.close();
@@ -75,14 +77,34 @@ public class SQLiteJDBC {
 
     public static void showTotalPerMonthByTag(){
         String sql = "select TOTAL(amount) as total, \n" +
-                "       strftime(\"%m-%Y\", date) as 'month-year' \n" +
-                "       from expenses group by strftime(\"%m-%Y\", date);";
+                "       strftime(\"%m-%Y\", date) as 'month-year', tag \n" +
+                "       from expenses group by strftime(\"%m-%Y\", date), tag;";
         createConnection();
         try{
             connection = DriverManager.getConnection("jdbc:sqlite:expenses.db");
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-            DBTablePrinter.printResultSet(rs);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int numCols = rsmd.getColumnCount();
+            while(rs.next()){
+
+                for(int i = 0; i < numCols; i++){
+                    switch(i){
+                        case 0:
+                            System.out.print( rs.getInt(1) /100.0 + " ");
+                            break;
+                        case 1:
+                            System.out.print(rs.getString(2) + " ");
+                            break;
+                        case 2:
+                            System.out.print(rs.getString(3));
+                            break;
+                    }
+
+                }
+                System.out.println();
+            }
+            //DBTablePrinter.printResultSet(rs);
             ps.close();
             connection.close();
         } catch (SQLException throwables) {
