@@ -7,7 +7,9 @@ public class CommandLineMenu implements IDisplay{
     public CommandLineMenu(){
         menuOptions = new ArrayList<MenuOption>();
         menuOptions.add(new MenuOption("Write expense to db", new ExpenseInput()));
-        menuOptions.add(new MenuOption("Generate expense csv report", new CSVWriter()));
+        menuOptions.add(new MenuOption("Generate expense csv report", ()->{
+            SQLiteJDBC.toCSV("expenses.csv");
+        }));
         menuOptions.add(new MenuOption("Dump table rows", ()->{
             SQLiteJDBC.dumpRows();
         }));

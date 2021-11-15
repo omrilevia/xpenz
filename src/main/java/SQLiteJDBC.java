@@ -1,10 +1,12 @@
 import org.sqlite.date.DateParser;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.time.*;
+import java.io.*;
 public class SQLiteJDBC {
     private static Connection connection = null;
     private SQLiteJDBC(){
@@ -73,6 +75,46 @@ public class SQLiteJDBC {
             e.printStackTrace();
         }
 
+    }
+
+    public static void toCSV(String name){
+        try{
+            connection = DriverManager.getConnection("jdbc:sqlite:expenses.db");
+            String sql = "SELECT * FROM expenses";
+
+            Statement statement = connection.createStatement();
+
+            ResultSet result = statement.executeQuery(sql);
+
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(name));
+
+            // write header line containing column names
+            fileWriter.write("id, date, amount, tag");
+
+            while (result.next()) {
+                Integer id = result.getInt("id");
+                String date = result.getString("date");
+                String amount = String.valueOf(result.getInt("amount")/100.0);
+                String tag = result.getString("tag");
+
+
+
+                String line = String.format("\"%s\",%s,%.sf,%s",
+                        id, date, amount, tag);
+
+                fileWriter.newLine();
+                fileWriter.write(line);
+            }
+
+            statement.close();
+            fileWriter.close();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     public static void showTotalPerMonthByTag(){
